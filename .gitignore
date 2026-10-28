@@ -1,0 +1,20 @@
+.env
+.env.*
+!.env.example
+node_modules/
+dist/
+.venv/
+__pycache__/
+.pytest_cache/
+*.db
+*.db-*
+*.tsbuildinfo
+
+# Local artifacts and private exports
+.DS_Store
+*.log
+*.ex5
+*.set
+backups/
+*.zip
+!.env.server.example

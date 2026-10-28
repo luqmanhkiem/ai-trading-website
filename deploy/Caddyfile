@@ -1,0 +1,13 @@
+{$AURUM_DOMAIN} {
+    basic_auth {
+        {$AURUM_USER} {$AURUM_PASSWORD_HASH}
+    }
+    handle /api/* {
+        reverse_proxy backend:8000
+    }
+    handle {
+        root * /srv/aurum
+        try_files {path} /index.html
+        file_server
+    }
+}

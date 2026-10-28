@@ -1,0 +1,39 @@
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: deploy/backend.Dockerfile
+    env_file: backend/.env
+    environment:
+      DATA_MODE: oanda
+      DATABASE_URL: sqlite:////data/aurum.db
+      ALLOWED_ORIGINS: https://${AURUM_DOMAIN:?Set your domain in .env.server}
+    volumes:
+      - aurum_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+  web:
+    build:
+      context: .
+      dockerfile: deploy/frontend.Dockerfile
+    environment:
+      AURUM_DOMAIN: ${AURUM_DOMAIN:?Set a domain}
+      AURUM_USER: ${AURUM_USER:?Set a username}
+      AURUM_PASSWORD_HASH: ${AURUM_PASSWORD_HASH:?Set a Caddy password hash}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - backend
+    restart: unless-stopped
+volumes:
+  aurum_data:
+  caddy_data:
+  caddy_config:
